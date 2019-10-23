@@ -1,6 +1,6 @@
 {
   "name": "deploy-files",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "deploy files with node",
   "main": "index.js",
   "dependencies": {
@@ -12,7 +12,9 @@
     "type": "git",
     "url": "https://github.com/jinzhan/deploy-files"
   },
-  "keywords": ["deploy"],
+  "keywords": [
+    "deploy"
+  ],
   "author": "jinzhan",
   "license": "BSD"
 }
