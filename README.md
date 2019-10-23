@@ -11,4 +11,4 @@
 
 ## Reference
 
-- https://github.com/fex-team/fis3-deploy-http-pus
+- https://github.com/fex-team/fis3-deploy-http-push
