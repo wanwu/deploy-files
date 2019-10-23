@@ -69,21 +69,4 @@ class Upload {
     }
 }
 
-module.exports = {
-    id: 'upload',
-    apply: (api, {_args: args, deployMap, baseUrl}) => {
-        const remote = args.remote;
-
-        if (!deployMap[remote]) {
-            console.error(`deployMap.${remote} is NOT exist`);
-            return;
-        }
-
-        api.chainWebpack(config => {
-            config.plugin(PLUGIN_NAME).use(new Upload({
-                ...deployMap[remote],
-                baseUrl
-            }));
-        });
-    }
-};
+module.exports = Upload;
