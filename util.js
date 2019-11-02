@@ -9,6 +9,7 @@
  * @name upload
  * @function
  */
+
 const upload = ({
     receiver,
     options = {},
@@ -25,23 +26,38 @@ const upload = ({
     const endl = '\r\n';
     const boundary = '-----np' + Math.random();
     const postData = [];
+
     Object.keys(data).forEach(key => {
         if (data[key]) {
-            postData.push('--' + boundary);
+            postData.push('--' + boundary + endl);
             postData.push(`Content-Disposition: form-data; name="${key}"` + endl);
-            postData.push(data[key]);
+            postData.push(endl);
+            postData.push(data[key] + endl);
         }
     });
-    postData.push('--' + boundary);
+
+    postData.push('--' + boundary + endl);
     const filename = subpath.split('/').pop();
     postData.push(`Content-Disposition: form-data; name="${options.uploadField || 'file'}"; filename="${filename}"` + endl);
+    postData.push(endl);
     postData.push(content);
+    postData.push(endl);
     postData.push('--' + boundary + '--' + endl);
     options.method = options.method || 'POST';
+
+    let contentLength = 0;
+    postData.forEach(item => {
+        let len = typeof item === 'string' ? Buffer.from(item).length : item.length;
+        contentLength += len;
+    });
+
+    const contentType = 'multipart/form-data; boundary=' + boundary;
     options.headers = Object.assign({
-        'Content-Type': 'multipart/form-data; boundary=' + boundary,
-        'Transfer-Encoding': 'chunked'
+        'Content-Type': contentType,
+        // 'Transfer-Encoding': 'chunked',
+        'Content-Length': contentLength
     }, options.headers);
+
     options = parseUrl(receiver, options);
     const http = options.protocol === 'https:' ? require('https') : require('http');
     const req = http.request(options, res => {
@@ -61,10 +77,11 @@ const upload = ({
                 callback(err.message || err);
             });
     });
+
     postData.forEach((data, index) => {
         req.write(data);
-        req.write(endl);
     });
+
     req.end();
 };
 
