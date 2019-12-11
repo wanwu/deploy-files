@@ -8,7 +8,7 @@
 - fsr.js 使用邮箱验证的安全方式上传
 - webpack-plugin.js webpack插件
 
-## webpack.config.js中配置
+## webpack.config.js配置
 
 ### 增加deployMap字段
 
