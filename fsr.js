@@ -109,7 +109,11 @@ function requireToken(validateApi, info, cb) {
 }
 
 function getTmpFile() {
-    return require('os').homedir() + '/.deploy-tmp/deploy.json';
+    const dir = require('os').homedir() + '/.deploy-tmp';
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+    return dir + '/deploy.json';
 }
 
 function deployInfo(options) {

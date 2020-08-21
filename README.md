@@ -30,7 +30,17 @@
  ...
 }
  ```
- 
+
+## 服务端配置
+
+把[receiver.php](https://gist.github.com/jinzhan/131858820f998acca568b374dcfd88e2)，部署到远程机器，并保证`receiver.php`能被正常访问
+
+
+直接访问`http://YOUR_HOST/YOUR_PATH/receiver.php`时，页面应该显示这行字
+
+```
+I'm ready for that, you know.
+```
 
 ## Reference
 
