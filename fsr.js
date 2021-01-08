@@ -69,7 +69,7 @@ function requireEmail(authApi, validateApi, info, cb) {
                 return cb(error);
             }
 
-            console.log('We\'re already sent the code to your email.')
+            console.log('We\'ve already sent the code to your email.')
 
             requireToken(validateApi, info, cb);
         });
