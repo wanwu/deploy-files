@@ -33,7 +33,7 @@ class Upload {
 
     apply(compiler) {
         const options = this.options;
-        compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
+        compiler.hooks.emit.tap(PLUGIN_NAME, compilation => {
             const targetFiles = Object.keys(compilation.assets).map(filename => {
                 const to = /\.tpl$/.test(filename) ? options.templatePath : options.staticPath;
                 return {
@@ -54,7 +54,6 @@ class Upload {
                 console.log('\n');
                 console.log('UPLOAD COMPLETED!');
             });
-            callback();
         });
     }
 
