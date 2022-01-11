@@ -29,12 +29,26 @@ const PLUGIN_NAME = 'WebpackDeployPlugin';
 class Upload {
     constructor(options = {}) {
         this.options = options;
+        this.uploadOptions = {
+            host: options.host,
+            receiver: options.receiver,
+            retry: 2
+        };
+        this.compilationAssets = {};
     }
 
     apply(compiler) {
         const options = this.options;
+
+        compiler.hooks.watchRun.tap(PLUGIN_NAME, compiler => {
+            this.uploadOptions.aborted = true;
+        });
+
         compiler.hooks.emit.tap(PLUGIN_NAME, compilation => {
-            const targetFiles = Object.keys(compilation.assets).map(filename => {
+            this.uploadOptions.aborted = false;
+            // 过滤掉已经上传成功的文件
+            const compilationAssets = this.filterFiles(compilation.assets);
+            const targetFiles = Object.keys(compilationAssets).map(filename => {
                 const to = /\.tpl$/.test(filename) ? options.templatePath : options.staticPath;
                 return {
                     host: options.host,
@@ -44,17 +58,30 @@ class Upload {
                     subpath: filename
                 };
             });
+
             // FIS安全部署服务
             const uploadHandler = options.disableFsr ? upload : fsrUpload;
-            uploadHandler(targetFiles, {
-                host: options.host,
-                receiver: options.receiver,
-                retry: 2
-            }, () => {
-                console.log('\n');
-                console.log('UPLOAD COMPLETED!');
-            });
+            const startTime = Date.now();
+            setTimeout(() => {
+                uploadHandler(targetFiles, this.uploadOptions, () => {
+                    Object.assign(this.compilationAssets, compilationAssets);
+                    console.log('\n');
+                    console.log('UPLOAD COMPLETED in ' + (Date.now() - startTime) + 'ms');
+                });
+            }, 200);
         });
+    }
+
+    filterFiles(assets) {
+        const targetAssets = {};
+        Object.keys(assets).forEach(filename => {
+            if (this.compilationAssets[filename] &&
+                this.compilationAssets[filename]._value === assets[filename]._value) {
+                return;
+            }
+            targetAssets[filename] = assets[filename];
+        });
+        return targetAssets;
     }
 
     getContent(filename, compilation) {

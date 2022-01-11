@@ -147,6 +147,10 @@ module.exports = function (modified, options, callback) {
         let reTryCount = options.retry;
 
         steps.push(function (next) {
+            if (options.aborted) {
+                return;
+            }
+
             /*eslint-disable */
             let $$upload = arguments.callee;
             /* eslint-enable */
