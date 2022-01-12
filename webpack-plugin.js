@@ -2,7 +2,7 @@
  * @file upload plugin
  * @author jinzhan <steinitz@qq.com>
  */
-
+const md5 = require('md5');
 const upload = require('./index');
 const fsrUpload = require('./fsr');
 
@@ -65,7 +65,16 @@ class Upload {
             const startTime = Date.now();
             setTimeout(() => {
                 uploadHandler(targetFiles, this.uploadOptions, () => {
-                    Object.assign(this.compilationAssets, compilationAssets);
+                    // 对于存在hash的文件，使用 1 作为flag
+                    // 对于 tpl、html 这种没有 hash 的文件，使用内容的 md5 作为flag
+                    Object.keys(compilationAssets).forEach(filename => {
+                        if (!/\.(tpl|html)$/.test(filename)) {
+                           this.compilationAssets[filename] = 1;
+                        } else {
+                           this.compilationAssets[filename] = md5(compilationAssets[filename]._value);
+                        }
+                    });
+
                     console.log('\n');
                     console.log('UPLOAD completed in ' + (Date.now() - startTime) + 'ms.');
                 });
@@ -75,9 +84,12 @@ class Upload {
 
     filterFiles(assets) {
         const targetAssets = {};
+        // 过滤掉已经上传成功的文件
         Object.keys(assets).forEach(filename => {
-            if (this.compilationAssets[filename] &&
-                this.compilationAssets[filename]._value === assets[filename]._value) {
+            if (this.compilationAssets[filename] && (
+               !/\.(tpl|html)$/.test(filename)
+               || (this.compilationAssets[filename] === md5(assets[filename]._value))
+            )) {
                 return;
             }
             targetAssets[filename] = assets[filename];

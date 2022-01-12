@@ -4,8 +4,9 @@
   "description": "deploy files with node",
   "main": "index.js",
   "dependencies": {
-    "prompts": "^2.4.2",
-    "colors": "1.4.0"
+    "colors": "1.4.0",
+    "md5": "^2.3.0",
+    "prompts": "^2.4.2"
   },
   "devDependencies": {},
   "repository": {
