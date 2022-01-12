@@ -34,6 +34,7 @@ class Upload {
             receiver: options.receiver,
             retry: 2
         };
+        this.throttle = options.throttle || 200;
         this.compilationAssets = {};
     }
 
@@ -66,9 +67,9 @@ class Upload {
                 uploadHandler(targetFiles, this.uploadOptions, () => {
                     Object.assign(this.compilationAssets, compilationAssets);
                     console.log('\n');
-                    console.log('UPLOAD COMPLETED in ' + (Date.now() - startTime) + 'ms');
+                    console.log('UPLOAD completed in ' + (Date.now() - startTime) + 'ms.');
                 });
-            }, 200);
+            }, this.throttle);
         });
     }
 
