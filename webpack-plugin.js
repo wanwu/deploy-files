@@ -2,7 +2,8 @@
  * @file upload plugin
  * @author jinzhan <steinitz@qq.com>
  */
-const md5 = require('md5');
+
+const crypto = require('crypto');
 const upload = require('./index');
 const fsrUpload = require('./fsr');
 
@@ -25,6 +26,12 @@ const fsrUpload = require('./fsr');
  * **/
 
 const PLUGIN_NAME = 'WebpackDeployPlugin';
+
+const getHash = source => {
+    const hash = crypto.createHash('md5');
+    source.updateHash(hash);
+    return hash.digest('hex');
+};
 
 class Upload {
     constructor(options = {}) {
@@ -68,11 +75,7 @@ class Upload {
                     // 对于存在hash的文件，使用 1 作为flag
                     // 对于 tpl、html 这种没有 hash 的文件，使用内容的 md5 作为flag
                     Object.keys(compilationAssets).forEach(filename => {
-                        if (!/\.(tpl|html)$/.test(filename)) {
-                           this.compilationAssets[filename] = 1;
-                        } else {
-                           this.compilationAssets[filename] = md5(compilationAssets[filename]._value);
-                        }
+                        this.compilationAssets[filename] = getHash(compilationAssets[filename]);
                     });
 
                     console.log('\n');
@@ -86,9 +89,8 @@ class Upload {
         const targetAssets = {};
         // 过滤掉已经上传成功的文件
         Object.keys(assets).forEach(filename => {
-            if (this.compilationAssets[filename] && (
-               !/\.(tpl|html)$/.test(filename)
-               || (this.compilationAssets[filename] === md5(assets[filename]._value))
+            if (this.compilationAssets[filename] && (  
+             this.compilationAssets[filename] === getHash(assets[filename])
             )) {
                 return;
             }
