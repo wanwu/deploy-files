@@ -3,6 +3,7 @@
  * @author jinzhan <steinitz@qq.com>
  */
 
+const md5 = require('md5');
 const upload = require('./index');
 const fsrUpload = require('./fsr');
 
@@ -34,6 +35,7 @@ class Upload {
             receiver: options.receiver,
             retry: 2
         };
+        this.throttle = options.throttle || 200;
         this.compilationAssets = {};
     }
 
@@ -64,19 +66,26 @@ class Upload {
             const startTime = Date.now();
             setTimeout(() => {
                 uploadHandler(targetFiles, this.uploadOptions, () => {
-                    Object.assign(this.compilationAssets, compilationAssets);
+                    // 对于存在hash的文件，使用 1 作为flag
+                    // 对于 tpl、html 这种没有 hash 的文件，使用内容的 md5 作为flag
+                    Object.keys(compilationAssets).forEach(filename => {
+                        this.compilationAssets[filename] = md5(compilationAssets[filename].source());
+                    });
+
                     console.log('\n');
-                    console.log('UPLOAD COMPLETED in ' + (Date.now() - startTime) + 'ms');
+                    console.log('UPLOAD completed in ' + (Date.now() - startTime) + 'ms.');
                 });
-            }, 200);
+            }, this.throttle);
         });
     }
 
     filterFiles(assets) {
         const targetAssets = {};
+        // 过滤掉已经上传成功的文件
         Object.keys(assets).forEach(filename => {
-            if (this.compilationAssets[filename] &&
-                this.compilationAssets[filename]._value === assets[filename]._value) {
+            if (this.compilationAssets[filename] && (  
+             this.compilationAssets[filename] === md5(assets[filename].source())
+            )) {
                 return;
             }
             targetAssets[filename] = assets[filename];

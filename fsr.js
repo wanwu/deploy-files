@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const colors = require('colors');
+const chalk = require('chalk');
 const prompts = require('prompts');
 const util = require('./util');
 
@@ -28,10 +28,10 @@ function upload(receiver, to, data, release, content, file, callback) {
             } else {
                 let time = '[' + util.now(true) + ']';
                 process.stdout.write(
-                    '\n - '.green.bold +
-                    time.grey + ' ' +
+                    chalk.green.bold('\n - ') +
+                    chalk.grey(time) + ' ' +
                     subpath.replace(/^\//, '') +
-                    ' >> '.yellow.bold +
+                    chalk.yellow.bold(' >> ') +
                     data.to
                 );
                 callback();

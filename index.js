@@ -1,5 +1,5 @@
 const path = require('path');
-const colors = require('colors');
+const chalk = require('chalk');
 const util = require('./util');
 
 /**
@@ -37,10 +37,10 @@ module.exports = (files, options, callback) => {
             }
             const time = '[' + util.now() + ']';
             process.stdout.write(
-                ' - '.green.bold
-                + time.grey + ' '
+                chalk.green.bold(' - ')
+                + chalk.grey(time) + ' '
                 + subpath.replace(/^\//, '')
-                + ' >> '.yellow.bold
+                + chalk.yellow.bold(' >> ')
                 + data['to']
                 + '\n'
             );
