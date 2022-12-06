@@ -57,7 +57,7 @@ class Upload {
                     receiver: options.receiver,
                     content: this.getContent(filename, compilation),
                     to,
-                    subpath: filename
+                    subpath: filename.replace(/\?.*$/, '')
                 };
             });
 
