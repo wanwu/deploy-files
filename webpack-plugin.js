@@ -18,6 +18,7 @@ const fsrUpload = require('./fsr');
  *    sandbox: {
  *        receiver: 'http://YOUR_HOST/receiver',
  *        templatePath: '/home/work/nginx_static/html/test/template',
+ *        templateSuffix: '.tpl', // '.(san|html)'或 '\.(san|html)'
  *        staticPath: '//home/work/nginx_static/html/test/static',
  *        staticDomain: 'http://test.com:8888'
  *    }
@@ -37,6 +38,9 @@ class Upload {
         };
         this.throttle = options.throttle || 200;
         this.compilationAssets = {};
+        const tplSuffix = options.templateSuffix || '.tpl';
+        // default: /\.tpl$/
+        this.tplReg = new RegExp((tplSuffix.indexOf('.') === 0 ? '\\' : '') + tplSuffix + '$');
     }
 
     apply(compiler) {
@@ -51,7 +55,7 @@ class Upload {
             // 过滤掉已经上传成功的文件
             const compilationAssets = this.filterFiles(compilation.assets);
             const targetFiles = Object.keys(compilationAssets).map(filename => {
-                const to = /\.tpl$/.test(filename) ? options.templatePath : options.staticPath;
+                const to = this.tplReg.test(filename) ? options.templatePath : options.staticPath;
                 return {
                     host: options.host,
                     receiver: options.receiver,
@@ -94,7 +98,7 @@ class Upload {
     }
 
     getContent(filename, compilation) {
-        const isContainCdn = /\.(css|js|tpl)$/.test(filename);
+        const isContainCdn = /\.(css|js)$/.test(filename) || this.tplReg.test(filename);;
         const source = compilation.assets[filename].source();
         if (isContainCdn) {
             const reg = new RegExp(this.options.baseUrl, 'g');

@@ -20,6 +20,7 @@
      sandbox: {
          receiver: 'http://YOUR_HOST/receiver',
          templatePath: '/home/work/nginx_static/html/test/template',
+         templateSuffix: '.html', // 模板后缀，不配置默认使用.tpl，也可传入'.(san|html)'
          staticPath: '//home/work/nginx_static/html/test/static',
          staticDomain: 'http://test.com:8888',
          throttle: 200 // 文件上传的延迟时间，默认为200ms
