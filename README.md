@@ -7,6 +7,7 @@
 - index.js 普通上传
 - fsr.js 使用邮箱验证的安全方式上传
 - webpack-plugin.js webpack插件
+- upload.js node使用上传插件，包含普通上传和fsr上传
 
 ## 配置
 
@@ -32,6 +33,24 @@
  ...
 }
  ```
+
+### upload.js 使用
+
+```js
+// 实例化
+const upload = new Upload({
+    disableFsr: false, // 默认启用fsr 默认false
+    host: 'http://host.com',
+    receiver: 'http://xxx.com:8xxx/receiver',
+    to: 'dest', // 目标机器路径
+    files: [{[filenam]: [sourceCode]}], // 文件对象
+    replace: [{from:'a', to:'b'}, {from: new RegExp('oldCDN', 'ig'), to: 'newCDN'}] // 替换内容
+});
+
+// 开始上传
+upload.run();
+
+```
 
 ### 服务端配置
 

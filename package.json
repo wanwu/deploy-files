@@ -1,6 +1,6 @@
 {
   "name": "deploy-files",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "deploy files with node",
   "main": "index.js",
   "dependencies": {
